@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Moses Alfaro" />
+    <meta name="description" content="This website entails my resume, some projects from my computational biology class, and a little bit of personal information about me.">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Exploratory Data Analysis Project</title>
+    <meta name="generator" content="Hugo 0.61.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/mosesresume.pdf">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project1/">Exploratory Data Analysis Project</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<pre class="r"><code>library(ggplot2)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ tibble  2.1.3     ✔ purrr   0.3.3
+## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
+## ✔ readr   1.3.1     ✔ forcats 0.4.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(knitr)
+opts_chunk$set(fig.align=&quot;center&quot;, fig.height=5, message=FALSE, fig.width=8,tidy.opts=list(width.cutoff=60),tidy=TRUE)
+load(file=&quot;indian_liver_patient.RData&quot;)
+load(file=&quot;diabetes.RData&quot;)</code></pre>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p><em>For my project, I used the website “Kaggle” to obtain my datasets. I obtained two datasets from this website. The first dataset I obtained is called “diabetes”. The “diabetes” dataset is used to predict whether or not a patient can be diagnosed as diabetic based on certain diagnositc measurements in the dataset. The patients were of primarily Prima Indian Heritage and were of at least 21 years old. Variables include: “Pregancies”, “Glucose”, “BloodPressure”, “SkinThickness”, “Insulin”, “BMI”, “DiabetesPedigreeFunction”, “Age”, and “Outcome”. My next dataset was named “indian_liver_patient”. It is based on patients with Liver disease that are caused by excessive consumption of alcohol, harmful gas intake, contaminated food intake, pickles and drugs. Variables for this dataset include “Age”, “Gender”, “Total_Bilirubin”, “Direct_Bilirubin”, “Alkaline_Aminotransferase”, “Asparte_Aminotransferase”, “Total_Proteins”, “Albumin”, and “Albumin_and_Globulin_Ration”. The common variable these two datasets had were “Age”.</em></p>
+<p><em>I chose these datasets because they have major health implications based on a variety of health aspects about the patient. I am interested in having a career in the medical field so analyzing and interpeting this data seemed practical and beneficial to my understanding of diseases and what factors cause these diseases and outcomes. From an intial review of the data, I predict that there will be a positive correlation between the “Glucose” and “BMI” variables due to heavier weight might having an impact on more glucose consumption/concentration in the body. Additionally, I predict that a person having diabetes(“Outcome” variable) will have higher glucose concetrations(“Glucose” variable). These analysis will be determined throughout the duration of this exploratory project and will be noted as it progresses.</em></p>
+</div>
+<div id="merging-datasets" class="section level2">
+<h2>Merging Datasets</h2>
+<p><em>After checking to see if the datasets were tidy, I joined the two datasets using the full_join command. This command allowed me to merge the datasets and combined the common variable, “Age”, to the final dataset. I used “full_join” because of its ability to combine the common variable and to keep all other variables together in one final dataset that I could use for the rest of this exploratory project.</em></p>
+<pre class="r"><code>mergedset&lt;-indian_liver_patient%&gt;%full_join(diabetes)
+glimpse(mergedset)</code></pre>
+<pre><code>## Observations: 7,374
+## Variables: 19
+## $ Age                        &lt;int&gt; 65, 65, 65, 62, 62, 62, 62, 62, 62, 6…
+## $ Gender                     &lt;fct&gt; Female, Female, Female, Male, Male, M…
+## $ Total_Bilirubin            &lt;dbl&gt; 0.7, 0.7, 0.7, 10.9, 10.9, 10.9, 10.9…
+## $ Direct_Bilirubin           &lt;dbl&gt; 0.1, 0.1, 0.1, 5.5, 5.5, 5.5, 5.5, 4.…
+## $ Alkaline_Phosphotase       &lt;int&gt; 187, 187, 187, 699, 699, 699, 699, 49…
+## $ Alamine_Aminotransferase   &lt;int&gt; 16, 16, 16, 64, 64, 64, 64, 60, 60, 6…
+## $ Aspartate_Aminotransferase &lt;int&gt; 18, 18, 18, 100, 100, 100, 100, 68, 6…
+## $ Total_Protiens             &lt;dbl&gt; 6.8, 6.8, 6.8, 7.5, 7.5, 7.5, 7.5, 7.…
+## $ Albumin                    &lt;dbl&gt; 3.3, 3.3, 3.3, 3.2, 3.2, 3.2, 3.2, 3.…
+## $ Albumin_and_Globulin_Ratio &lt;dbl&gt; 0.90, 0.90, 0.90, 0.74, 0.74, 0.74, 0…
+## $ Dataset                    &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ Pregnancies                &lt;int&gt; 5, 0, 5, 0, 1, 2, 12, 0, 1, 2, 12, 8,…
+## $ Glucose                    &lt;int&gt; 147, 161, 103, 105, 135, 197, 121, 10…
+## $ BloodPressure              &lt;int&gt; 78, 50, 108, 84, 54, 70, 78, 84, 54, …
+## $ SkinThickness              &lt;int&gt; 0, 0, 37, 0, 0, 99, 17, 0, 0, 99, 17,…
+## $ Insulin                    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300,…
+## $ BMI                        &lt;dbl&gt; 33.7, 21.9, 39.2, 27.9, 26.7, 34.7, 2…
+## $ DiabetesPedigreeFunction   &lt;dbl&gt; 0.218, 0.254, 0.305, 0.741, 0.687, 0.…
+## $ Outcome                    &lt;int&gt; 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0…</code></pre>
+</div>
+<div id="wrangling-the-data" class="section level2">
+<h2>Wrangling the Data</h2>
+<p><em>Using one of the core dyplr functions (“filter”), I filtered out the “Female” values from the variable “Gender” in the ’mergedset</em></p>
+<pre class="r"><code>mergedset%&gt;%filter(Gender == &quot;Female&quot;)%&gt;%glimpse()</code></pre>
+<pre><code>## Observations: 1,963
+## Variables: 19
+## $ Age                        &lt;int&gt; 65, 65, 65, 26, 26, 26, 26, 26, 26, 2…
+## $ Gender                     &lt;fct&gt; Female, Female, Female, Female, Femal…
+## $ Total_Bilirubin            &lt;dbl&gt; 0.7, 0.7, 0.7, 0.9, 0.9, 0.9, 0.9, 0.…
+## $ Direct_Bilirubin           &lt;dbl&gt; 0.1, 0.1, 0.1, 0.2, 0.2, 0.2, 0.2, 0.…
+## $ Alkaline_Phosphotase       &lt;int&gt; 187, 187, 187, 154, 154, 154, 154, 15…
+## $ Alamine_Aminotransferase   &lt;int&gt; 16, 16, 16, 16, 16, 16, 16, 16, 16, 1…
+## $ Aspartate_Aminotransferase &lt;int&gt; 18, 18, 18, 12, 12, 12, 12, 12, 12, 1…
+## $ Total_Protiens             &lt;dbl&gt; 6.8, 6.8, 6.8, 7.0, 7.0, 7.0, 7.0, 7.…
+## $ Albumin                    &lt;dbl&gt; 3.3, 3.3, 3.3, 3.5, 3.5, 3.5, 3.5, 3.…
+## $ Albumin_and_Globulin_Ratio &lt;dbl&gt; 0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.…
+## $ Dataset                    &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ Pregnancies                &lt;int&gt; 5, 0, 5, 3, 3, 1, 5, 0, 2, 1, 2, 0, 4…
+## $ Glucose                    &lt;int&gt; 147, 161, 103, 78, 180, 101, 139, 131…
+## $ BloodPressure              &lt;int&gt; 78, 50, 108, 50, 64, 50, 64, 0, 68, 3…
+## $ SkinThickness              &lt;int&gt; 0, 0, 37, 32, 25, 15, 35, 0, 25, 42, …
+## $ Insulin                    &lt;int&gt; 0, 0, 0, 88, 70, 36, 140, 0, 71, 99, …
+## $ BMI                        &lt;dbl&gt; 33.7, 21.9, 39.2, 31.0, 34.0, 24.2, 2…
+## $ DiabetesPedigreeFunction   &lt;dbl&gt; 0.218, 0.254, 0.305, 0.248, 0.271, 0.…
+## $ Outcome                    &lt;int&gt; 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1…</code></pre>
+<p><em>Using the “arrange” dyplr core function, I arranged everything by the Age from least to greatest. This helps by looking at the data from a younger perspective to an older perspective and the health outlooks on each age. We can see that as the age increases, so does Blood Pressure and Glucose concentration.</em></p>
+<pre class="r"><code>mergedset%&gt;%arrange(Age)%&gt;%glimpse()</code></pre>
+<pre><code>## Observations: 7,374
+## Variables: 19
+## $ Age                        &lt;int&gt; 4, 4, 6, 7, 7, 8, 10, 11, 12, 12, 13,…
+## $ Gender                     &lt;fct&gt; Male, Male, Male, Female, Male, Femal…
+## $ Total_Bilirubin            &lt;dbl&gt; 0.9, 0.8, 0.6, 27.2, 0.5, 0.9, 0.8, 0…
+## $ Direct_Bilirubin           &lt;dbl&gt; 0.2, 0.2, 0.1, 11.8, 0.1, 0.2, 0.1, 0…
+## $ Alkaline_Phosphotase       &lt;int&gt; 348, 460, 289, 1420, 352, 401, 395, 5…
+## $ Alamine_Aminotransferase   &lt;int&gt; 30, 152, 38, 790, 28, 25, 25, 26, 47,…
+## $ Aspartate_Aminotransferase &lt;int&gt; 34, 231, 30, 1050, 51, 58, 75, 29, 67…
+## $ Total_Protiens             &lt;dbl&gt; 8.0, 6.5, 4.8, 6.1, 7.9, 7.5, 7.6, 7.…
+## $ Albumin                    &lt;dbl&gt; 4.0, 3.2, 2.0, 2.0, 4.2, 3.4, 3.6, 4.…
+## $ Albumin_and_Globulin_Ratio &lt;dbl&gt; 1.00, 0.90, 0.70, 0.40, 1.10, 0.80, 0…
+## $ Dataset                    &lt;int&gt; 2, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 1…
+## $ Pregnancies                &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ Glucose                    &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ BloodPressure              &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ SkinThickness              &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ Insulin                    &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ BMI                        &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ DiabetesPedigreeFunction   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ Outcome                    &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
+<p><em>For the next command, I used the “select” dyplr function to show certain variables out of the dataset that could be analyzed depending on the context of analyzation, using graphs.</em></p>
+<pre class="r"><code>mergedset%&gt;%select(Age, Gender, Glucose, Insulin, BMI)%&gt;%glimpse()</code></pre>
+<pre><code>## Observations: 7,374
+## Variables: 5
+## $ Age     &lt;int&gt; 65, 65, 65, 62, 62, 62, 62, 62, 62, 62, 62, 58, 58, 58, …
+## $ Gender  &lt;fct&gt; Female, Female, Female, Male, Male, Male, Male, Male, Ma…
+## $ Glucose &lt;int&gt; 147, 161, 103, 105, 135, 197, 121, 105, 135, 197, 121, 1…
+## $ Insulin &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 0, 325, 285, 265, …
+## $ BMI     &lt;dbl&gt; 33.7, 21.9, 39.2, 27.9, 26.7, 34.7, 26.5, 27.9, 26.7, 34…</code></pre>
+<p><em>In this next section, I used the dyplr function “mutate” to create a new variable called “GlucosebyBMI” which is the measurement of Glucose concentration by the patients’ BMI. This will help analyzing or combining data to generate analyzation on how glucose concentration is affected by a patient’s BMI.</em></p>
+<pre class="r"><code>mergedset%&gt;%mutate(GlucosebyBMI = Glucose/BMI)%&gt;%glimpse()</code></pre>
+<pre><code>## Observations: 7,374
+## Variables: 20
+## $ Age                        &lt;int&gt; 65, 65, 65, 62, 62, 62, 62, 62, 62, 6…
+## $ Gender                     &lt;fct&gt; Female, Female, Female, Male, Male, M…
+## $ Total_Bilirubin            &lt;dbl&gt; 0.7, 0.7, 0.7, 10.9, 10.9, 10.9, 10.9…
+## $ Direct_Bilirubin           &lt;dbl&gt; 0.1, 0.1, 0.1, 5.5, 5.5, 5.5, 5.5, 4.…
+## $ Alkaline_Phosphotase       &lt;int&gt; 187, 187, 187, 699, 699, 699, 699, 49…
+## $ Alamine_Aminotransferase   &lt;int&gt; 16, 16, 16, 64, 64, 64, 64, 60, 60, 6…
+## $ Aspartate_Aminotransferase &lt;int&gt; 18, 18, 18, 100, 100, 100, 100, 68, 6…
+## $ Total_Protiens             &lt;dbl&gt; 6.8, 6.8, 6.8, 7.5, 7.5, 7.5, 7.5, 7.…
+## $ Albumin                    &lt;dbl&gt; 3.3, 3.3, 3.3, 3.2, 3.2, 3.2, 3.2, 3.…
+## $ Albumin_and_Globulin_Ratio &lt;dbl&gt; 0.90, 0.90, 0.90, 0.74, 0.74, 0.74, 0…
+## $ Dataset                    &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ Pregnancies                &lt;int&gt; 5, 0, 5, 0, 1, 2, 12, 0, 1, 2, 12, 8,…
+## $ Glucose                    &lt;int&gt; 147, 161, 103, 105, 135, 197, 121, 10…
+## $ BloodPressure              &lt;int&gt; 78, 50, 108, 84, 54, 70, 78, 84, 54, …
+## $ SkinThickness              &lt;int&gt; 0, 0, 37, 0, 0, 99, 17, 0, 0, 99, 17,…
+## $ Insulin                    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300,…
+## $ BMI                        &lt;dbl&gt; 33.7, 21.9, 39.2, 27.9, 26.7, 34.7, 2…
+## $ DiabetesPedigreeFunction   &lt;dbl&gt; 0.218, 0.254, 0.305, 0.741, 0.687, 0.…
+## $ Outcome                    &lt;int&gt; 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0…
+## $ GlucosebyBMI               &lt;dbl&gt; 4.362018, 7.351598, 2.627551, 3.76344…</code></pre>
+<p><em>For this section, I used the ‘summarize’ function in conjuction with other summary statistic functions (dplyr) (mean,sd, max, min, etc) to showcase certain statistics that can be generated in order to analyze trends or significant correlations in the dataset. For instance, we can see the max “BMI” value or we can group the variable “Outcome” and see how the average “Insulin” value compares to patients who have diabetes and patients who do not have diabetes. These functions come in handy when trying to detemrine any relationships between variables in datasets, which are of immense value. The below summary statistics showcase some of those relationships.</em></p>
+<pre class="r"><code>mergedset%&gt;%summarize(mean_age=mean(Age))</code></pre>
+<pre><code>##   mean_age
+## 1 35.47993</code></pre>
+<pre class="r"><code>mergedset%&gt;%summarize(sd_glucose=sd(Glucose, na.rm=T))</code></pre>
+<pre><code>##   sd_glucose
+## 1   31.28845</code></pre>
+<pre class="r"><code>mergedset%&gt;%summarize(min_age=min(Age))</code></pre>
+<pre><code>##   min_age
+## 1       4</code></pre>
+<pre class="r"><code>mergedset%&gt;%summarize(max_BMI= max(BMI, na.rm=T))</code></pre>
+<pre><code>##   max_BMI
+## 1    67.1</code></pre>
+<pre class="r"><code>mergedset%&gt;%summarize(var_Insulin=var(Insulin, na.rm=T))</code></pre>
+<pre><code>##   var_Insulin
+## 1    12141.43</code></pre>
+<pre class="r"><code>mergedset%&gt;%summarize(mean_BP=mean(BloodPressure, na.rm=T))</code></pre>
+<pre><code>##    mean_BP
+## 1 70.51676</code></pre>
+<pre class="r"><code>mergedset%&gt;%summarize(sd_Pregnancies=sd(Pregnancies, na.rm=T))</code></pre>
+<pre><code>##   sd_Pregnancies
+## 1       3.511099</code></pre>
+<pre class="r"><code>mergedset%&gt;%summarize(mean_albumin=mean(Albumin, na.rm=T))</code></pre>
+<pre><code>##   mean_albumin
+## 1     3.289484</code></pre>
+<pre class="r"><code>mergedset%&gt;%summarize(max_totalproteins=max(Total_Protiens, na.rm=T))</code></pre>
+<pre><code>##   max_totalproteins
+## 1               9.6</code></pre>
+<pre class="r"><code>mergedset%&gt;%summarize(mean_SkinThickness=mean(SkinThickness, na.rm = T))</code></pre>
+<pre><code>##   mean_SkinThickness
+## 1           20.41593</code></pre>
+<pre class="r"><code>mergedset%&gt;%group_by(Gender)%&gt;%summarize(mean_AlkalinePhosphotase=mean(Alkaline_Phosphotase, na.rm = T))</code></pre>
+<pre><code>## Warning: Factor `Gender` contains implicit NA, consider using
+## `forcats::fct_explicit_na`</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   Gender mean_AlkalinePhosphotase
+##   &lt;fct&gt;                     &lt;dbl&gt;
+## 1 Female                     270.
+## 2 Male                       250.
+## 3 &lt;NA&gt;                       NaN</code></pre>
+<pre class="r"><code>mergedset2&lt;-mergedset%&gt;%mutate(Outcome=case_when(Outcome == 0 ~ &quot;No Diabetes&quot;, Outcome == 1 ~ &quot;Diabetes&quot;))
+mergedset2%&gt;%group_by(Gender, Outcome)%&gt;%summarize(sd_BMI=sd(BMI, na.rm=T))</code></pre>
+<pre><code>## Warning: Factor `Gender` contains implicit NA, consider using
+## `forcats::fct_explicit_na`
+
+## Warning: Factor `Gender` contains implicit NA, consider using
+## `forcats::fct_explicit_na`</code></pre>
+<pre><code>## # A tibble: 8 x 3
+## # Groups:   Gender [3]
+##   Gender Outcome     sd_BMI
+##   &lt;fct&gt;  &lt;chr&gt;        &lt;dbl&gt;
+## 1 Female Diabetes     7.51 
+## 2 Female No Diabetes  7.52 
+## 3 Female &lt;NA&gt;        NA    
+## 4 Male   Diabetes     7.19 
+## 5 Male   No Diabetes  7.59 
+## 6 Male   &lt;NA&gt;        NA    
+## 7 &lt;NA&gt;   Diabetes     4.67 
+## 8 &lt;NA&gt;   No Diabetes  0.990</code></pre>
+<pre class="r"><code>mergedset2%&gt;%group_by(Outcome)%&gt;%summarize(mean_Insulin=mean(Insulin, na.rm=T))</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   Outcome     mean_Insulin
+##   &lt;chr&gt;              &lt;dbl&gt;
+## 1 Diabetes            94.0
+## 2 No Diabetes         63.4
+## 3 &lt;NA&gt;               NaN</code></pre>
+<p><em>In this section, the cor() function was used to generate a correlation matrix that shows how each of the variables are correlated with each other in the joined dataset. From the tables we can see the strongest correlations and weakest correlations based on the positive/negative values along with the amount of each value in determining what type of correlation they have (negative/positive).</em></p>
+<pre class="r"><code>mergedset2%&gt;%select_if(is.numeric)%&gt;%na.omit%&gt;%cor()%&gt;%glimpse()</code></pre>
+<pre><code>##  num [1:17, 1:17] 1 0.068511 0.07071 0.159144 0.000581 ...
+##  - attr(*, &quot;dimnames&quot;)=List of 2
+##   ..$ : chr [1:17] &quot;Age&quot; &quot;Total_Bilirubin&quot; &quot;Direct_Bilirubin&quot; &quot;Alkaline_Phosphotase&quot; ...
+##   ..$ : chr [1:17] &quot;Age&quot; &quot;Total_Bilirubin&quot; &quot;Direct_Bilirubin&quot; &quot;Alkaline_Phosphotase&quot; ...</code></pre>
+</div>
+<div id="visualizing-the-data" class="section level2">
+<h2>Visualizing the Data</h2>
+<p><em>For the graph “Age of Patients by BMI”, it can be seen that there is not much a relationship between the variables of BMI to Age. We can see that both females and males, for the most part, share the same similarities in BMI by Age from this dataset. It can be seen that for each age (up until the data cuts off) that there is a even spread across BMI’s with no one Age having a signficant deviation from the rest of the other ages. We can see that there are some outliers in the younger ages that deviate to a higher BMI. But, for the overall data it is seen that there are no signficant deviations of trends among the three variables. </em></p>
+<pre class="r"><code>ggplot(data= mergedset2, aes(x= BMI, y= Age, color = Gender)) + geom_point(size = 4, alpha= 0.5, stat=&quot;summary&quot;)+ggtitle(&quot;Age of Patients by BMI&quot;)+ylab(&quot;Age(Years)&quot;)+theme_dark()+theme(plot.background = element_rect(fill= &quot;green&quot;))+theme(panel.border = element_rect(linetype = &quot;dashed&quot;, fill = NA))+scale_x_continuous(breaks=seq(0,150,5))+scale_y_continuous(breaks=seq(0,100,5))</code></pre>
+<pre><code>## Warning: Removed 65 rows containing non-finite values (stat_summary).</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-9-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em>For the graph “Glucose Concentration by Age”, the variables “Glucose”, “Age”, and “Outcome” were used to make an analysis of any trends or relationships present. From the data, we can see immeadiately that patients with diabetes have higher glucose concentrations in their bodys compared to patients who do not have diabetes. This can be seen using the legend which demonstrate which colors indicate the patients with/without diabetes. There is a sort of uniformity between the values of the Age and Glucose variables. We do not see any signifcant deviations or changes in data between certain ages and glucose concentrations in this dataset. </em></p>
+<pre class="r"><code>ggplot(data=mergedset2, aes(x=Glucose, y=Age, color=Outcome)) + geom_point(size=4, alpha=0.5)+ggtitle(&quot;Glucose Concentration by Age&quot;)+labs(y=&quot;Age(Years)&quot;, x=&quot;Glucose Concentration&quot;)+theme(legend.position = &quot;bottom&quot;)+ theme(axis.text = element_text(colour = &quot;blue&quot;))+scale_y_continuous(breaks=seq(0,100,10))+scale_x_continuous(breaks=seq(0,200,10))</code></pre>
+<pre><code>## Warning: Removed 65 rows containing missing values (geom_point).</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>##Dimensionality Reduction</p>
+<p><em>For the following data adjustments, PCA analysis was used on the merged data to infer any relationships between the variables we are analyzing, like “Age”, “Glucose”, ’Insulin&quot;, etc. The steps that are demonstrated are the ones that were performed and showed in lecture.</em></p>
+<pre class="r"><code>mergedset3&lt;-mergedset2%&gt;%select(-Gender,-Outcome)
+mergedset_nums&lt;-mergedset3%&gt;%select_if(is.numeric)%&gt;%na.omit%&gt;%scale
+rownames(mergedset_nums)&lt;-mergedset3$Name
+mergedset_pca&lt;-princomp(mergedset_nums)
+names(mergedset_pca)</code></pre>
+<pre><code>## [1] &quot;sdev&quot;     &quot;loadings&quot; &quot;center&quot;   &quot;scale&quot;    &quot;n.obs&quot;    &quot;scores&quot;  
+## [7] &quot;call&quot;</code></pre>
+<pre class="r"><code>summary(mergedset_pca, loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3     Comp.4     Comp.5
+## Standard deviation     1.7325315 1.4606291 1.4109257 1.24152141 1.18577814
+## Proportion of Variance 0.1765929 0.1255137 0.1171168 0.09068167 0.08272141
+## Cumulative Proportion  0.1765929 0.3021066 0.4192234 0.50990511 0.59262652
+##                            Comp.6     Comp.7     Comp.8     Comp.9
+## Standard deviation     1.03836796 0.96515700 0.93790192 0.91234012
+## Proportion of Variance 0.06343276 0.05480334 0.05175185 0.04896938
+## Cumulative Proportion  0.65605929 0.71086262 0.76261448 0.81158386
+##                           Comp.10    Comp.11    Comp.12    Comp.13
+## Standard deviation     0.88620661 0.82963479 0.80919774 0.64306823
+## Proportion of Variance 0.04620416 0.04049347 0.03852303 0.02432905
+## Cumulative Proportion  0.85778801 0.89828148 0.93680451 0.96113356
+##                           Comp.14     Comp.15     Comp.16     Comp.17
+## Standard deviation     0.63218871 0.394493735 0.240025507 0.218490494
+## Proportion of Variance 0.02351281 0.009155694 0.003389424 0.002808511
+## Cumulative Proportion  0.98464637 0.993802065 0.997191489 1.000000000
+## 
+## Loadings:
+##                            Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6
+## Age                         0.239  0.274         0.514              
+## Total_Bilirubin             0.407 -0.250        -0.111 -0.409       
+## Direct_Bilirubin            0.409 -0.253        -0.101 -0.409       
+## Alkaline_Phosphotase        0.234                0.120 -0.170  0.265
+## Alamine_Aminotransferase    0.274 -0.332 -0.181         0.522       
+## Aspartate_Aminotransferase  0.303 -0.326 -0.172         0.490       
+## Total_Protiens             -0.234 -0.306 -0.263  0.327 -0.297       
+## Albumin                    -0.369 -0.330 -0.287  0.306 -0.106       
+## Albumin_and_Globulin_Ratio -0.294 -0.252 -0.210  0.159              
+## Dataset                    -0.245               -0.167        -0.120
+## Pregnancies                 0.176  0.184         0.515              
+## Glucose                            0.250 -0.260  0.179         0.437
+## BloodPressure               0.107  0.248 -0.215  0.192        -0.500
+## SkinThickness                      0.202 -0.452 -0.250        -0.186
+## Insulin                            0.212 -0.426 -0.191         0.377
+## BMI                                0.240 -0.371               -0.415
+## DiabetesPedigreeFunction                 -0.282                0.311
+##                            Comp.7 Comp.8 Comp.9 Comp.10 Comp.11 Comp.12
+## Age                                                                    
+## Total_Bilirubin             0.278                                      
+## Direct_Bilirubin            0.258                                      
+## Alkaline_Phosphotase       -0.665 -0.119  0.369                 -0.481 
+## Alamine_Aminotransferase                                               
+## Aspartate_Aminotransferase                                             
+## Total_Protiens             -0.119         0.176         -0.144   0.439 
+## Albumin                                                                
+## Albumin_and_Globulin_Ratio  0.226        -0.241 -0.112   0.229  -0.678 
+## Dataset                     0.344         0.769  0.356          -0.182 
+## Pregnancies                        0.178 -0.142  0.534          -0.116 
+## Glucose                     0.399 -0.308  0.111 -0.348  -0.227         
+## BloodPressure                             0.278 -0.377   0.534   0.137 
+## SkinThickness              -0.213        -0.126  0.423   0.121         
+## Insulin                           -0.276 -0.110  0.258   0.293         
+## BMI                                             -0.156  -0.682  -0.149 
+## DiabetesPedigreeFunction           0.870  0.165 -0.124                 
+##                            Comp.13 Comp.14 Comp.15 Comp.16 Comp.17
+## Age                         0.717   0.239                         
+## Total_Bilirubin                                     0.322  -0.629 
+## Direct_Bilirubin                                   -0.232   0.672 
+## Alkaline_Phosphotase                                              
+## Alamine_Aminotransferase                    0.695                 
+## Aspartate_Aminotransferase                 -0.707                 
+## Total_Protiens                                     -0.515  -0.214 
+## Albumin                                             0.689   0.290 
+## Albumin_and_Globulin_Ratio                         -0.305  -0.144 
+## Dataset                                                           
+## Pregnancies                -0.530  -0.106                         
+## Glucose                            -0.437                         
+## BloodPressure              -0.257                                 
+## SkinThickness               0.293  -0.559                         
+## Insulin                    -0.172   0.565                         
+## BMI                                 0.323                         
+## DiabetesPedigreeFunction</code></pre>
+<pre class="r"><code>eigval&lt;-mergedset_pca$sdev^2
+varprop=round(eigval/sum(eigval),2)
+
+ggplot()+geom_bar(aes(y=varprop,x=1:17),stat=&quot;identity&quot;)+xlab(&quot;&quot;)+geom_path(aes(y=varprop,x=1:17))+ geom_text(aes(x=1:17,y=varprop,label=round(varprop,2)),vjust=1,col=&quot;white&quot;,size=5)+
+ scale_y_continuous(breaks=seq(0,0.20,0.05),labels = scales::percent)+
+ scale_x_continuous(breaks=1:17)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-13-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>round(cumsum(eigval)/sum(eigval,2))</code></pre>
+<pre><code>##  Comp.1  Comp.2  Comp.3  Comp.4  Comp.5  Comp.6  Comp.7  Comp.8  Comp.9 
+##       0       0       0       0       1       1       1       1       1 
+## Comp.10 Comp.11 Comp.12 Comp.13 Comp.14 Comp.15 Comp.16 Comp.17 
+##       1       1       1       1       1       1       1       1</code></pre>
+<pre class="r"><code>eigval</code></pre>
+<pre><code>##     Comp.1     Comp.2     Comp.3     Comp.4     Comp.5     Comp.6 
+## 3.00166524 2.13343750 1.99071142 1.54137542 1.40606980 1.07820802 
+##     Comp.7     Comp.8     Comp.9    Comp.10    Comp.11    Comp.12 
+## 0.93152803 0.87966002 0.83236450 0.78536215 0.68829389 0.65480099 
+##    Comp.13    Comp.14    Comp.15    Comp.16    Comp.17 
+## 0.41353674 0.39966257 0.15562531 0.05761224 0.04773810</code></pre>
+<pre class="r"><code>summary(mergedset_pca, loadings = T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3     Comp.4     Comp.5
+## Standard deviation     1.7325315 1.4606291 1.4109257 1.24152141 1.18577814
+## Proportion of Variance 0.1765929 0.1255137 0.1171168 0.09068167 0.08272141
+## Cumulative Proportion  0.1765929 0.3021066 0.4192234 0.50990511 0.59262652
+##                            Comp.6     Comp.7     Comp.8     Comp.9
+## Standard deviation     1.03836796 0.96515700 0.93790192 0.91234012
+## Proportion of Variance 0.06343276 0.05480334 0.05175185 0.04896938
+## Cumulative Proportion  0.65605929 0.71086262 0.76261448 0.81158386
+##                           Comp.10    Comp.11    Comp.12    Comp.13
+## Standard deviation     0.88620661 0.82963479 0.80919774 0.64306823
+## Proportion of Variance 0.04620416 0.04049347 0.03852303 0.02432905
+## Cumulative Proportion  0.85778801 0.89828148 0.93680451 0.96113356
+##                           Comp.14     Comp.15     Comp.16     Comp.17
+## Standard deviation     0.63218871 0.394493735 0.240025507 0.218490494
+## Proportion of Variance 0.02351281 0.009155694 0.003389424 0.002808511
+## Cumulative Proportion  0.98464637 0.993802065 0.997191489 1.000000000
+## 
+## Loadings:
+##                            Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6
+## Age                         0.239  0.274         0.514              
+## Total_Bilirubin             0.407 -0.250        -0.111 -0.409       
+## Direct_Bilirubin            0.409 -0.253        -0.101 -0.409       
+## Alkaline_Phosphotase        0.234                0.120 -0.170  0.265
+## Alamine_Aminotransferase    0.274 -0.332 -0.181         0.522       
+## Aspartate_Aminotransferase  0.303 -0.326 -0.172         0.490       
+## Total_Protiens             -0.234 -0.306 -0.263  0.327 -0.297       
+## Albumin                    -0.369 -0.330 -0.287  0.306 -0.106       
+## Albumin_and_Globulin_Ratio -0.294 -0.252 -0.210  0.159              
+## Dataset                    -0.245               -0.167        -0.120
+## Pregnancies                 0.176  0.184         0.515              
+## Glucose                            0.250 -0.260  0.179         0.437
+## BloodPressure               0.107  0.248 -0.215  0.192        -0.500
+## SkinThickness                      0.202 -0.452 -0.250        -0.186
+## Insulin                            0.212 -0.426 -0.191         0.377
+## BMI                                0.240 -0.371               -0.415
+## DiabetesPedigreeFunction                 -0.282                0.311
+##                            Comp.7 Comp.8 Comp.9 Comp.10 Comp.11 Comp.12
+## Age                                                                    
+## Total_Bilirubin             0.278                                      
+## Direct_Bilirubin            0.258                                      
+## Alkaline_Phosphotase       -0.665 -0.119  0.369                 -0.481 
+## Alamine_Aminotransferase                                               
+## Aspartate_Aminotransferase                                             
+## Total_Protiens             -0.119         0.176         -0.144   0.439 
+## Albumin                                                                
+## Albumin_and_Globulin_Ratio  0.226        -0.241 -0.112   0.229  -0.678 
+## Dataset                     0.344         0.769  0.356          -0.182 
+## Pregnancies                        0.178 -0.142  0.534          -0.116 
+## Glucose                     0.399 -0.308  0.111 -0.348  -0.227         
+## BloodPressure                             0.278 -0.377   0.534   0.137 
+## SkinThickness              -0.213        -0.126  0.423   0.121         
+## Insulin                           -0.276 -0.110  0.258   0.293         
+## BMI                                             -0.156  -0.682  -0.149 
+## DiabetesPedigreeFunction           0.870  0.165 -0.124                 
+##                            Comp.13 Comp.14 Comp.15 Comp.16 Comp.17
+## Age                         0.717   0.239                         
+## Total_Bilirubin                                     0.322  -0.629 
+## Direct_Bilirubin                                   -0.232   0.672 
+## Alkaline_Phosphotase                                              
+## Alamine_Aminotransferase                    0.695                 
+## Aspartate_Aminotransferase                 -0.707                 
+## Total_Protiens                                     -0.515  -0.214 
+## Albumin                                             0.689   0.290 
+## Albumin_and_Globulin_Ratio                         -0.305  -0.144 
+## Dataset                                                           
+## Pregnancies                -0.530  -0.106                         
+## Glucose                            -0.437                         
+## BloodPressure              -0.257                                 
+## SkinThickness               0.293  -0.559                         
+## Insulin                    -0.172   0.565                         
+## BMI                                 0.323                         
+## DiabetesPedigreeFunction</code></pre>
+<pre class="r"><code>mergedataf&lt;-data.frame(PC1=mergedset_pca$scores[,1], PC5=mergedset_pca$scores[,5])
+ggplot(mergedataf,aes(PC1, PC5))+geom_point()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-15-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>results&lt;-mergedset2%&gt;%as.data.frame%&gt;%
+ mutate(PC1=mergedset_pca$sx[,1],PC2=mergedset_pca$x[,2],
+ PC3=mergedset_pca$x[,3],PC4=mergedset_pca$x[,4])
+
+results%&gt;%ggplot(aes(Glucose,Age,color=Gender, shape=Outcome))+geom_point(size=2)+labs(x=&quot;Glucose Concentration&quot;)+ggtitle(&quot;Plot of PCA Analyzation&quot;)</code></pre>
+<pre><code>## Warning: Removed 65 rows containing missing values (geom_point).</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-16-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em>An overall analysis of this data from the graphs shows that the PC components do not separate the variables of Age, Glucose Concentration very well. There seems to be an overlap of the data and no signifcant correlations of similarity between the three variables to distinguish definite groups. Those variables include Age, Glucose Concentration, Outcome, and Gender. If there were significant correlationtions of similarity there would be defined groups of the data that would be separated showing on this graph, but there is not which indicataes no signifcant correlations between these variables.</em></p>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

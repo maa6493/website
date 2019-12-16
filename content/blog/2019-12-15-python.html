@@ -1,0 +1,37 @@
+---
+title: Python
+author: Moses Alfaro
+date: '2019-12-15'
+slug: python
+categories: []
+tags: []
+description: ''
+---
+
+
+
+<div id="python-the-computational-program" class="section level2">
+<h2>Python, the Computational Program</h2>
+<p><img src="/blog/2019-12-15-python_files/pythonimage.jpeg" />
+Python is a computational program that allows users to use a varitey of packages and programs through its interface to conduct prcoedures needed in a variety of fields (i.e., computational biology or statistics in general). In our class for computational biology, we used the program R studio which can be used in conjuction with Python. For instance, down below is a tutorial on how to use Python along with the R Studio interface. I will show you some ways to use Python in R Studio in conjuction with a variety of functions that could be useful to you.</p>
+<p><em>You must use the library(reticulate) function in order to connect Python to R studio.</em></p>
+<pre class="r"><code>library(reticulate)</code></pre>
+<p><em>Down below is where we use Python coding on R Studio interface! How cool!!</em></p>
+<pre class="python"><code>print(&quot;How is everyone doing today?&quot;)</code></pre>
+<pre><code>## How is everyone doing today?</code></pre>
+<p><em>We can use Numpy as a way to have numerical computing in Python (i.e, we can use this for arrays as well!). This is shown down below.</em></p>
+<pre class="python"><code>import numpy as np
+x=np.array([1,2,3])
+x</code></pre>
+<pre><code>## array([1, 2, 3])</code></pre>
+<pre class="python"><code>print(x/2+1) #vectorized arithmetic</code></pre>
+<pre><code>## [1 2 2]</code></pre>
+<pre class="python"><code>x.shape #size of array (attribute)</code></pre>
+<pre><code>## (3,)</code></pre>
+<p><em>We can use Numpy for basic numeric tests as well!</em></p>
+<pre class="python"><code>love = 4
+pie = 3
+
+love + pie</code></pre>
+<pre><code>## 7</code></pre>
+</div>

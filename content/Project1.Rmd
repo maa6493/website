@@ -1,0 +1,154 @@
+---
+title: "Exploratory Data Analysis Project"
+author: "Moses Alfaro (maa6493)"
+date: "10/20/2019"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, message=FALSE, fig.width=8,tidy.opts=list(width.cutoff=60),tidy=TRUE)
+load(file="indian_liver_patient.RData")
+load(file="diabetes.RData")
+```
+
+## Introduction
+
+*For my project, I used the website "Kaggle" to obtain my datasets. I obtained two datasets from this website. The first dataset I obtained is called "diabetes". The "diabetes" dataset is used to predict whether or not a patient can be diagnosed as diabetic based on certain diagnositc measurements in the dataset. The patients were of primarily Prima Indian Heritage and were of at least 21 years old. Variables include: "Pregancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction", "Age", and "Outcome". My next dataset was named "indian_liver_patient". It is based on patients with Liver disease that are caused by excessive consumption of alcohol, harmful gas intake, contaminated food intake, pickles and drugs. Variables for this dataset include "Age", "Gender", "Total_Bilirubin", "Direct_Bilirubin", "Alkaline_Aminotransferase", "Asparte_Aminotransferase", "Total_Proteins", "Albumin", and "Albumin_and_Globulin_Ration". The common variable these two datasets had were "Age".*
+
+*I chose these datasets because they have major health implications based on a variety of health aspects about the patient. I am interested in having a career in the medical field so analyzing and interpeting this data seemed practical and beneficial to my understanding of diseases and what factors cause these diseases and outcomes. From an intial review of the data, I predict that there will be a positive correlation between the "Glucose" and "BMI" variables due to heavier weight might having an impact on more glucose consumption/concentration in the body. Additionally, I predict that a person having diabetes("Outcome" variable) will have higher glucose concetrations("Glucose" variable). These analysis will be determined throughout the duration of this exploratory project and will be noted as it progresses.*
+
+
+## Merging Datasets
+
+*After checking to see if the datasets were tidy, I joined the two datasets using the full_join command. This command allowed me to merge the datasets and combined the common variable, "Age", to the final dataset. I used "full_join" because of its ability to combine the common variable and to keep all other variables together in one final dataset that I could use for the rest of this exploratory project.*
+
+
+```{r}
+mergedset<-indian_liver_patient%>%full_join(diabetes)
+glimpse(mergedset)
+```
+
+## Wrangling the Data
+
+
+*Using one of the core dyplr functions ("filter"), I filtered out the "Female" values from the variable "Gender" in the 'mergedset*
+
+```{r}
+mergedset%>%filter(Gender == "Female")%>%glimpse()
+```
+
+*Using the "arrange" dyplr core function, I arranged everything by the Age from least to greatest. This helps by looking at the data from a younger perspective to an older perspective and the health outlooks on each age. We can see that as the age increases, so does Blood Pressure and Glucose concentration.*
+
+```{r}
+mergedset%>%arrange(Age)%>%glimpse()
+```
+
+*For the next command, I used the "select" dyplr function to show certain variables out of the dataset that could be analyzed depending on the context of analyzation, using graphs.*
+
+```{r}
+mergedset%>%select(Age, Gender, Glucose, Insulin, BMI)%>%glimpse()
+```
+
+*In this next section, I used the dyplr function "mutate" to create a new variable called "GlucosebyBMI" which is the measurement of Glucose concentration by the patients' BMI. This will help analyzing or combining data to generate analyzation on how glucose concentration is affected by a patient's BMI.*
+
+
+```{r}
+mergedset%>%mutate(GlucosebyBMI = Glucose/BMI)%>%glimpse()
+```
+
+*For this section, I used the 'summarize' function in conjuction with other summary statistic functions (dplyr) (mean,sd, max, min, etc) to showcase certain statistics that can be generated in order to analyze trends or significant correlations in the dataset. For instance, we can see the max "BMI" value or we can group the variable "Outcome" and see how the average "Insulin" value compares to patients who have diabetes and patients who do not have diabetes. These functions come in handy when trying to detemrine any relationships between variables in datasets, which are of immense value. The below summary statistics showcase some of those relationships.*
+
+```{r}
+mergedset%>%summarize(mean_age=mean(Age))
+mergedset%>%summarize(sd_glucose=sd(Glucose, na.rm=T))
+mergedset%>%summarize(min_age=min(Age))
+mergedset%>%summarize(max_BMI= max(BMI, na.rm=T))
+mergedset%>%summarize(var_Insulin=var(Insulin, na.rm=T))
+mergedset%>%summarize(mean_BP=mean(BloodPressure, na.rm=T))
+mergedset%>%summarize(sd_Pregnancies=sd(Pregnancies, na.rm=T))
+mergedset%>%summarize(mean_albumin=mean(Albumin, na.rm=T))
+mergedset%>%summarize(max_totalproteins=max(Total_Protiens, na.rm=T))
+mergedset%>%summarize(mean_SkinThickness=mean(SkinThickness, na.rm = T))
+mergedset%>%group_by(Gender)%>%summarize(mean_AlkalinePhosphotase=mean(Alkaline_Phosphotase, na.rm = T))
+mergedset2<-mergedset%>%mutate(Outcome=case_when(Outcome == 0 ~ "No Diabetes", Outcome == 1 ~ "Diabetes"))
+mergedset2%>%group_by(Gender, Outcome)%>%summarize(sd_BMI=sd(BMI, na.rm=T))
+mergedset2%>%group_by(Outcome)%>%summarize(mean_Insulin=mean(Insulin, na.rm=T))
+```
+
+*In this section, the cor() function was used to generate a correlation matrix that shows how each of the variables are correlated with each other in the joined dataset. From the tables we can see the strongest correlations and weakest correlations based on the positive/negative values along with the amount of each value in determining what type of correlation they have (negative/positive).*
+
+```{r}
+mergedset2%>%select_if(is.numeric)%>%na.omit%>%cor()%>%glimpse()
+```
+
+
+## Visualizing the Data
+
+*For the graph "Age of Patients by BMI", it can be seen that there is not much a relationship between the variables of BMI to Age. We can see that both females and males, for the most part, share the same similarities in BMI by Age from this dataset. It can be seen that for each age (up until the data cuts off) that there is a even spread across BMI's with no one Age having a signficant deviation from the rest of the other ages. We can see that there are some outliers in the younger ages that deviate to a higher BMI. But, for the overall data it is seen that there are no signficant deviations of trends among the three variables. *
+
+```{r}
+ggplot(data= mergedset2, aes(x= BMI, y= Age, color = Gender)) + geom_point(size = 4, alpha= 0.5, stat="summary")+ggtitle("Age of Patients by BMI")+ylab("Age(Years)")+theme_dark()+theme(plot.background = element_rect(fill= "green"))+theme(panel.border = element_rect(linetype = "dashed", fill = NA))+scale_x_continuous(breaks=seq(0,150,5))+scale_y_continuous(breaks=seq(0,100,5))
+```
+
+
+*For the graph "Glucose Concentration by Age", the variables "Glucose", "Age", and "Outcome" were used to make an analysis of any trends or relationships present. From the data, we can see immeadiately that patients with diabetes have higher glucose concentrations in their bodys compared to patients who do not have diabetes. This can be seen using the legend which demonstrate which colors indicate the patients with/without diabetes. There is a sort of uniformity between the values of the Age and Glucose variables. We do not see any signifcant deviations or changes in data between certain ages and glucose concentrations in this dataset. *
+
+```{r}
+ggplot(data=mergedset2, aes(x=Glucose, y=Age, color=Outcome)) + geom_point(size=4, alpha=0.5)+ggtitle("Glucose Concentration by Age")+labs(y="Age(Years)", x="Glucose Concentration")+theme(legend.position = "bottom")+ theme(axis.text = element_text(colour = "blue"))+scale_y_continuous(breaks=seq(0,100,10))+scale_x_continuous(breaks=seq(0,200,10))
+```
+
+
+
+##Dimensionality Reduction
+
+*For the following data adjustments, PCA analysis was used on the merged data to infer any relationships between the variables we are analyzing, like "Age", "Glucose", 'Insulin", etc. The steps that are demonstrated are the ones that were performed and showed in lecture.*
+
+```{r}
+mergedset3<-mergedset2%>%select(-Gender,-Outcome)
+mergedset_nums<-mergedset3%>%select_if(is.numeric)%>%na.omit%>%scale
+rownames(mergedset_nums)<-mergedset3$Name
+mergedset_pca<-princomp(mergedset_nums)
+names(mergedset_pca)
+
+```
+
+
+```{r}
+summary(mergedset_pca, loadings=T)
+```
+```{r}
+eigval<-mergedset_pca$sdev^2
+varprop=round(eigval/sum(eigval),2)
+
+ggplot()+geom_bar(aes(y=varprop,x=1:17),stat="identity")+xlab("")+geom_path(aes(y=varprop,x=1:17))+ geom_text(aes(x=1:17,y=varprop,label=round(varprop,2)),vjust=1,col="white",size=5)+
+ scale_y_continuous(breaks=seq(0,0.20,0.05),labels = scales::percent)+
+ scale_x_continuous(breaks=1:17)
+```
+
+```{r}
+round(cumsum(eigval)/sum(eigval,2))
+eigval
+summary(mergedset_pca, loadings = T)
+```
+
+```{r}
+mergedataf<-data.frame(PC1=mergedset_pca$scores[,1], PC5=mergedset_pca$scores[,5])
+ggplot(mergedataf,aes(PC1, PC5))+geom_point()
+```
+
+```{r}
+results<-mergedset2%>%as.data.frame%>%
+ mutate(PC1=mergedset_pca$sx[,1],PC2=mergedset_pca$x[,2],
+ PC3=mergedset_pca$x[,3],PC4=mergedset_pca$x[,4])
+
+results%>%ggplot(aes(Glucose,Age,color=Gender, shape=Outcome))+geom_point(size=2)+labs(x="Glucose Concentration")+ggtitle("Plot of PCA Analyzation")
+```
+
+*An overall analysis of this data from the graphs shows that the PC components do not separate the variables of Age, Glucose Concentration very well. There seems to be an overlap of the data and no signifcant correlations of similarity between the three variables to distinguish definite groups. Those variables include Age, Glucose Concentration, Outcome, and Gender. If there were significant correlationtions of similarity there would be defined groups of the data that would be separated showing on this graph, but there is not which indicataes no signifcant correlations between these variables.*

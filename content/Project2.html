@@ -1,0 +1,449 @@
+---
+title: 'Project 2: Modeling, Testing, and Predicting'
+author: "Moses Alfaro (maa6493)"
+date: "11/25/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p><em>For my project, I used the website: <a href="https://vincentarelbundock.github.io/Rdatasets/datasets.html" class="uri">https://vincentarelbundock.github.io/Rdatasets/datasets.html</a> as my source of finding my dataset for this project. The dataset that I am working with is called “Channing House Data”. This dataset contains data on the Channing Retirement House located in Fresno, California and stores collected data on men and women that passed through this house from 1964 until July 1, 1975. Their age on entry and also on leaving or death was recorded along with their sex. A large number of these observations were censored mainly due to the resident being alive on July 1, 1975 when the data was collected. The age at when they died and their gender were also marked down in this dataset. Differences between the survival of the sexes, taking age into account, was one of the primary concerns of the study. Overall the variables in this set are “sex”, “entry”, “exit”, “time”, and “cens”. The “sex” variable demonstrates whether one is male or female; the “entry” variable represents the age in months at when the person entered into the Channing House; the “exit” variable represents the age in months of the resident on death, leaving the centre or July 1, 1975, whichever event occured first; the “time” variable represents the length of time (in months) that the resident spent at Channing House; the “cens” variable represents the indicator of right censoring (1 indicates that the resident died at channing house and 0 represents that they left the house prior to July 1st, 1975, or that they were still alive in the centre at that date).</em></p>
+<p>##Part One</p>
+<ol style="list-style-type: decimal">
+<li>(15 pts) Perform a MANOVA testing whether any of your numeric variables (or a subset of them, if including them all doesn’t make sense) show a mean difference across levels of one of your categorical variables (3). If they do, perform univariate ANOVAs to find response(s) showing a mean difference across groups (3), and perform post-hoc t tests to find which groups differ (3). Discuss the number of tests you have performed, calculate the probability of at least one type I error (if unadjusted), and adjust the significance level accordingly (bonferroni correction) before discussing significant differences (3). Briefly discuss assumptions and whether or not they are likely to have been met (2).</li>
+</ol>
+<pre class="r"><code>#MANOVA test
+sex &lt;- chandata$sex
+exit &lt;- chandata$exit
+entry &lt;- chandata$entry
+time&lt;- chandata$time
+res.man &lt;- manova(cbind(exit, entry, time) ~ sex, data = chandata)
+summary (res.man)</code></pre>
+<pre><code>##            Df  Pillai approx F num Df den Df Pr(&gt;F)
+## sex         1 0.01139   1.7588      3    458 0.1542
+## Residuals 460</code></pre>
+<pre class="r"><code>#Bonferroni correction
+0.05/4</code></pre>
+<pre><code>## [1] 0.0125</code></pre>
+<pre class="r"><code>#Probability of type-1 error
+1-0.95^4</code></pre>
+<pre><code>## [1] 0.1854938</code></pre>
+<p><em>After running the MANOVA test for my numeric variables (exit, entry, and time) against the categorical variable (sex), there was shown to be no signficant value, which indicates no mean difference across levels of my catgeorical variable, sex, against the numeric variables. As Dr. Woodward stated, since my MANOVA was not significant, I do not have to continue with further tests and I just explain what tests I would’ve done if my results were significant. If my MANOVA test was signficant for these variables, I would of have to of had to perform 4 total tests (including MANOVA). But, MANOVA already tells us what groups differ and we wouldn’t of have to perfrom these t-tests to find signficance against the different groups. To calculate the bonferroni correction, we divide the alpha (0.05), which indicates signficance if the p-value is under this value, by the number of tests I would’ve ran if my MANOVA results would’ve shown signficance. This bonferroni correction would be 0.0125 which would allow us to remain at a 0.05 error rate to keep the signifcance. The type-one error rate we would get in this case is 0.1854938 based on the number of tests we ran and using this formula (1-0.95^4) which gives us how much error we could probably encounter. The main assumptions for a MANOVA test are 1) random samples, independent observations; 2) multivariate normality of DVs; 3) Homogenity of within-group covariance matrices; 4) linear relationships among DVs; 5) no extreme univariate or multivariate outliers; 6) no multicollinearity. There are a lot of assumptions for this test, and as said in lecture, they are hard to test and meet! We know we meet assumptions like random samples and independent observations, but testing out the other assumptions can be tricky for this MANOVA test and you have to eyeball them off of ggplots for the variables you are observing (sex, entry, exit, time) and look for what assumptions you need. </em></p>
+</div>
+<div id="part-two" class="section level2">
+<h2>Part Two</h2>
+<ol start="2" style="list-style-type: decimal">
+<li>(10 pts) Perform some kind of randomization test on your data (that makes sense). This can be anything you want! State null and alternative hypotheses, perform the test, and interpret the results (7). Create a plot visualizing the null distribution and the test statistic (3).</li>
+</ol>
+<pre class="r"><code>cens &lt;- chandata$cens
+##One-Way ANOVA Test to compare means of exit data against sex categorical variable
+
+#Boxplot of null distributions
+ggplot(chandata, aes(x = sex, y = exit)) +
+  geom_boxplot(fill = &quot;grey80&quot;, colour = &quot;blue&quot;) +
+  scale_x_discrete() + xlab(&quot;Sex&quot;) +
+  ylab(&quot;exit&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>#lm test to determine differences of sex and exit while using an ANOVA after lm test
+chan_lm = lm(exit ~ sex, data = chandata)
+summary(chan_lm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = exit ~ sex, data = chandata)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -214.58  -46.58    4.49   44.47  222.49 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  984.510      3.862 254.893   &lt;2e-16 ***
+## sexMale        7.068      8.429   0.838    0.402    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 73.79 on 460 degrees of freedom
+## Multiple R-squared:  0.001526,   Adjusted R-squared:  -0.0006446 
+## F-statistic: 0.703 on 1 and 460 DF,  p-value: 0.4022</code></pre>
+<pre class="r"><code># Analysis of variance using ANOVA
+anova_one_way &lt;- aov(exit~sex, data=chandata)
+summary(anova_one_way)</code></pre>
+<pre><code>##              Df  Sum Sq Mean Sq F value Pr(&gt;F)
+## sex           1    3828    3828   0.703  0.402
+## Residuals   460 2504801    5445</code></pre>
+<pre class="r"><code># Confidence Intervals
+confint(chan_lm)</code></pre>
+<pre><code>##                  2.5 %    97.5 %
+## (Intercept) 976.919384 992.09979
+## sexMale      -9.497163  23.63262</code></pre>
+<pre class="r"><code># Model Residuals Plot 
+chan.mod = data.frame(Fitted = fitted(chan_lm),
+  Residuals = resid(chan_lm), Treatment = chandata$sex)
+
+ggplot(chan.mod, aes(Fitted, Residuals, colour = sex)) + geom_point()</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<p><em>The null hypothesis for this ANOVA test is that the mean of the exit time (variable) is the same for both the female and male variables.</em></p>
+<p><em>The alternative hypothesis for this ANOVA test is that one of the means from either the female or male’s mean exit time is different from each other. </em></p>
+<p><em>The results indicate that there are no signficant mean differences between female and males’ exit times. We see this from the p-value not being signifcant (0.4022) after running the ANOVA test. We can also visualize these results in the boxplot presented above. We see that visually there is also no difference between the males and females’ exit times in months. Lastly, we plotted the residuals against the fitted values to test the assumptions and we see that there is an even spread of residuals for both males and females which is another indicator of there being no signficant difference in mean exit times.</em></p>
+<p>##Part Three</p>
+<ol start="3" style="list-style-type: decimal">
+<li>(35 pts) Build a linear regression model predicting one of your response variables from at least 2other variables, including their interaction. Mean-center any numeric variables involved in the interaction.
+– Interpret the coefficient estimates (do not discuss significance) (10)
+– Plot the regression using ggplot(). If your interaction is numeric by numeric, refer to code near the end of WS15 to make the plot. If you have 3 or more predictors, just chose two to plot for convenience. (7)
+– Check assumptions of linearity, normality, and homoskedasticity either graphically or using a hypothesis test (3)
+– Regardless, recompute regression results with robust standard errors via coeftest(…, vcov=vcovHC(…)). Discuss significance of results, including any changes from before/after robust SEs if applicable. (7)
+– What proportion of the variation in the outcome does your model explain? (3)</li>
+</ol>
+<pre class="r"><code>#Multiple Regressions with and without interactions of the sex/exit variables against the response variable, time. Numeric values not mean-centered for this part, but are in next part. 
+fit&lt;-lm(time ~ sex + exit, data=chandata)
+fit_int&lt;- lm(time ~ sex*exit, data = chandata)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = time ~ sex + exit, data = chandata)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -96.20 -38.95   1.54  37.61  86.38 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -188.62407   27.32746  -6.902 1.71e-11 ***
+## sexMale      -10.40644    5.00442  -2.079   0.0381 *  
+## exit           0.27500    0.02766   9.942  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 43.78 on 459 degrees of freedom
+## Multiple R-squared:  0.1814, Adjusted R-squared:  0.1778 
+## F-statistic: 50.86 on 2 and 459 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary (fit_int)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = time ~ sex * exit, data = chandata)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -96.898 -38.679   1.135  37.455  87.751 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  -200.43185   30.69905  -6.529 1.76e-10 ***
+## sexMale        46.61313   67.64910   0.689    0.491    
+## exit            0.28699    0.03110   9.229  &lt; 2e-16 ***
+## sexMale:exit   -0.05759    0.06814  -0.845    0.398    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 43.79 on 458 degrees of freedom
+## Multiple R-squared:  0.1827, Adjusted R-squared:  0.1773 
+## F-statistic: 34.12 on 3 and 458 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#Mean centering of numberic variables 
+chandata$time_mc &lt;- chandata$time - mean(chandata$time)
+chandata$entry_mc &lt;- chandata$entry - mean(chandata$entry)
+chandata$exit_mc &lt;- chandata$exit - mean(chandata$exit)
+
+#Multiple Regression Test with Interactions of sex &amp; exit variable against time response variable 
+fit_int_mc &lt;- lm(time_mc ~ sex* exit_mc, data = chandata)
+summary(fit_int_mc)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = time_mc ~ sex * exit_mc, data = chandata)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -96.898 -38.679   1.135  37.455  87.751 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       2.20270    2.29251   0.961   0.3371    
+## sexMale         -10.16964    5.01382  -2.028   0.0431 *  
+## exit_mc           0.28699    0.03110   9.229   &lt;2e-16 ***
+## sexMale:exit_mc  -0.05759    0.06814  -0.845   0.3984    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 43.79 on 458 degrees of freedom
+## Multiple R-squared:  0.1827, Adjusted R-squared:  0.1773 
+## F-statistic: 34.12 on 3 and 458 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#GGPlot of the Regression 
+ggplot(chandata, aes(x=entry_mc, y=time_mc,group=sex))+geom_point(aes(color=sex))+
+ geom_smooth(method=&quot;lm&quot;,formula=y~1,se=F,fullrange=T,aes(color=sex))+
+theme(legend.position=c(.9,.19))+xlab(&quot;&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code># Check for  Linearity and Homoskedasticity 
+resids&lt;-fit_int_mc$residuals
+fitvals&lt;-fit_int_mc$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color=&#39;red&#39;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<pre class="r"><code>bptest(fit_int_mc)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit_int_mc
+## BP = 3.1873, df = 3, p-value = 0.3636</code></pre>
+<pre class="r"><code># Check for Normality Assumption
+ggplot()+geom_histogram(aes(resids), bins=20)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-3.png" width="672" /></p>
+<pre class="r"><code># Before compute with robust standard errors
+summary(fit_int_mc)$coef[,1:2]</code></pre>
+<pre><code>##                     Estimate Std. Error
+## (Intercept)       2.20270006 2.29250647
+## sexMale         -10.16964216 5.01381668
+## exit_mc           0.28698977 0.03109504
+## sexMale:exit_mc  -0.05758939 0.06813782</code></pre>
+<pre class="r"><code># Recompute of Regression Results with Robust Standard Errors
+library(sandwich)
+library(lmtest)
+coeftest(fit, vcov = vcovHC(fit_int_mc))[,1:2]</code></pre>
+<pre><code>##               Estimate Std. Error
+## (Intercept) -188.62407   2.291854
+## sexMale      -10.40644   5.007589</code></pre>
+<pre class="r"><code># Proportion of the variation in the outcome explained by the model
+(sum((time-mean(time))^2)-sum(fit_int_mc$residuals^2))/sum((time-mean(time))^2)</code></pre>
+<pre><code>## [1] 0.1826699</code></pre>
+<pre class="r"><code>decimalvalue &lt;- (sum((time-mean(time))^2)-sum(fit_int_mc$residuals^2))/sum((time-mean(time))^2)
+decimalvalue*100</code></pre>
+<pre><code>## [1] 18.26699</code></pre>
+<pre class="r"><code># Rerun of regression without interactions (only main effects)
+fit&lt;-lm(time ~ sex + exit, data=chandata)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = time ~ sex + exit, data = chandata)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -96.20 -38.95   1.54  37.61  86.38 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -188.62407   27.32746  -6.902 1.71e-11 ***
+## sexMale      -10.40644    5.00442  -2.079   0.0381 *  
+## exit           0.27500    0.02766   9.942  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 43.78 on 459 degrees of freedom
+## Multiple R-squared:  0.1814, Adjusted R-squared:  0.1778 
+## F-statistic: 50.86 on 2 and 459 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p><em>When looking at the coefficients of this test, we see that when we control for sex, we see that there is a significant of exit time on the time variable that was spent at Channing House for the patients. For every one month increase in the exit time there at channing house, we see the time spent there increase by 0.275 months for each resident of the Channing House. The p-value was less than 0.05 indicating its significance. We also see that the sex of the residents has a significant impact on the time spent in the Channing House (p-value &lt; 0.05). We see that being a male actually reduced the time that they spent in the house by 10.4 months compared to the female residents of Channing house. This could indicate that the males died off faster or exited the house for other reasons than the females. </em></p>
+<p><em>The significance of the recompute of the regression with robust standard errors shows that the sex still has a signficant effect on the time spent at the house, but we see the standard errors reduced signficantly compared to the original regression model for the intercept. Which indicates that this model is a good predictor of time from the variable sex and not exit time.</em></p>
+<p><em>The proportion of variation that comes from the outcome explained from the model is 18.27% as it was calculated up above in the r chunk,</em></p>
+<p>##Part Four
+4. (5 pts) Rerun same regression model (with interaction), but this time compute bootstrapped standard errors. Discuss any changes you observe in SEs and p-values using these SEs compared to the original SEs and the robust SEs)</p>
+<pre class="r"><code># Bootstrapped SEs (resampling)
+fitted&lt;-fit_int_mc$fitted.values 
+resid_resamp&lt;-replicate(5000,{
+new_resids&lt;-sample(resids,replace=TRUE) 
+chandata$new_y&lt;-fitted+new_resids 
+fit_int_mc2&lt;-lm(new_y~sex*exit_mc,data=chandata)
+coef(fit_int_mc2) 
+})
+resid_resamp%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept)  sexMale    exit_mc sexMale:exit_mc
+## 1    2.314021 4.925405 0.03116064      0.06815203</code></pre>
+<pre class="r"><code># Original SEs 
+coeftest(fit_int_mc)[,1:2]</code></pre>
+<pre><code>##                     Estimate Std. Error
+## (Intercept)       2.20270006 2.29250647
+## sexMale         -10.16964216 5.01381668
+## exit_mc           0.28698977 0.03109504
+## sexMale:exit_mc  -0.05758939 0.06813782</code></pre>
+<pre class="r"><code># Robust SEs
+coeftest(fit_int_mc, vcov=vcovHC(fit_int_mc))[,1:2] </code></pre>
+<pre><code>##                     Estimate Std. Error
+## (Intercept)       2.20270006 2.29185352
+## sexMale         -10.16964216 5.00758853
+## exit_mc           0.28698977 0.02554881
+## sexMale:exit_mc  -0.05758939 0.05471389</code></pre>
+<p><em>The bootstrapping does not implemenet signficant change to the standard errors or p-values. There seems to be a slight increases in the SEs we see in the boostrapping SEs from the robust and original regressions. This can indicate that this method is prone to more error than the robust or original models that were conducted previously as we this increase in error. </em></p>
+<p>##Part Five
+5. (40 pts) Perform a logistic regression predicting a binary categorical variable (if you don’t have one, make/get one) from at least two explanatory variables (interaction not necessary).
+– Interpret coefficient estimates in context (10)
+– Report a confusion matrix for your logistic regression (2)
+– Compute and discuss the Accuracy, Sensitivity (TPR), Specificity (TNR), and Recall (PPV) of your model (5)
+– Using ggplot, plot density of log-odds (logit) by your binary outcome variable (3)
+– Generate an ROC curve (plot) and calculate AUC (either manually or with a package); interpret (10)
+– Perform 10-fold (or repeated random sub-sampling) CV and report average out-of-sample Accuracy, Sensitivity, and Recall (10)</p>
+<pre class="r"><code>#Logistic Regression
+fit2&lt;-glm(cens~ entry + exit, data = chandata, family = binomial (link = &quot;logit&quot;))
+coeftest(fit2)</code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##               Estimate Std. Error z value  Pr(&gt;|z|)    
+## (Intercept) -6.0217610  1.4353621 -4.1953 2.725e-05 ***
+## entry        0.0131548  0.0023488  5.6006 2.136e-08 ***
+## exit        -0.0065133  0.0021149 -3.0798  0.002072 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>#coefficients
+exp(coef(fit2))</code></pre>
+<pre><code>## (Intercept)       entry        exit 
+## 0.002425395 1.013241684 0.993507897</code></pre>
+<pre class="r"><code>log_odds &lt;-exp(coef(fit2))
+
+#Confusion Matrix
+prob.cens&lt;- predict(fit2, type = &quot;response&quot;)
+table(predict=as.numeric(prob.cens&gt;0.5), truth=chandata$cens)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict   0   1 Sum
+##     0   234 123 357
+##     1    52  53 105
+##     Sum 286 176 462</code></pre>
+<pre class="r"><code>#Accuracy
+(234+53)/462</code></pre>
+<pre><code>## [1] 0.6212121</code></pre>
+<pre class="r"><code>#Sensitivty 
+234/357</code></pre>
+<pre><code>## [1] 0.6554622</code></pre>
+<pre class="r"><code>#Specificty 
+53/105</code></pre>
+<pre><code>## [1] 0.5047619</code></pre>
+<pre class="r"><code>#Precision
+234/286</code></pre>
+<pre><code>## [1] 0.8181818</code></pre>
+<pre class="r"><code># ggplot of density of log-odds (logit) by binary outcome variable (cens)
+
+
+
+# ROC Curve &amp; AUC calculation
+chandata&lt;-chandata%&gt;%mutate(prob=predict(fit2, type=&quot;response&quot;), prediction=ifelse(prob&gt;.5,1,0))
+newdata&lt;-chandata%&gt;%transmute(prob,prediction,truth=cens)
+newdata%&gt;%glimpse()</code></pre>
+<pre><code>## Observations: 462
+## Variables: 3
+## $ prob       &lt;dbl&gt; 0.1603959, 0.5122841, 0.2549037, 0.4456317, 0.2550742…
+## $ prediction &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,…
+## $ truth      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,…</code></pre>
+<pre class="r"><code>ROCplot&lt;-ggplot(newdata)+geom_roc(aes(d=truth,m=prob), n.cuts=0) 
+ROCplot</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.6691831</code></pre>
+<pre class="r"><code># 10-fold CV and average out-of-sample Accuracy, Sensitivity, and Recall 
+class_diag&lt;-function(probs,truth){
+  
+ tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+ acc=sum(diag(tab))/sum(tab)
+ sens=tab[2,2]/colSums(tab)[2]
+ spec=tab[1,1]/colSums(tab)[1]
+ ppv=tab[2,2]/rowSums(tab)[2]
+ if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+
+ #Exact AUC calculation
+ ord&lt;-order(probs, decreasing=TRUE)
+ probs &lt;- probs[ord]; truth &lt;- truth[ord]
+ 
+ TPR=cumsum(truth)/max(1,sum(truth))
+ FPR=cumsum(!truth)/max(1,sum(!truth))
+ 
+ dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+ TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+ 
+ n &lt;- length(TPR)
+ auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+ 
+ data.frame(acc,sens,spec,ppv,auc)
+} 
+
+#10-fold CV
+set.seed(1234)
+k=10
+data3&lt;-newdata[sample(nrow(newdata)),]
+folds4&lt;-cut(seq(1:nrow(newdata)),breaks=k,labels=F)
+diags4&lt;-NULL
+for(i in 1:k){
+ train&lt;-data3[folds4!=i,]
+ test&lt;-data3[folds4==i,]
+ truth&lt;-test$prob
+ fit&lt;-glm(prob~(.)^2,data=train,family=&quot;binomial&quot;)
+ probs&lt;-predict(fit,newdata = test,type=&quot;response&quot;)
+ diags5&lt;-rbind(diags4,class_diag(probs,truth))
+}</code></pre>
+<pre><code>## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!
+
+## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!
+
+## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!
+
+## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!
+
+## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!
+
+## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!
+
+## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!
+
+## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!
+
+## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!
+
+## Warning in eval(family$initialize): non-integer #successes in a binomial
+## glm!</code></pre>
+<pre class="r"><code>apply(diags5,2,mean)</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.0212766 0.0000000 1.0000000 0.0000000 1.0000000</code></pre>
+<p><em>From the coefficients, we see that both the entry and exit variables are a significant predictor of cens, which is the binary variable indicating whether or not a resident has died or left the Channing House. </em></p>
+<p><em>The accuracy from the confusion matrix of the original linear regression model explains that 62.12% of residents who died in or who left Channing House were accurately measured (cens variable). For sensitivity (true-positive rate), we see that 65.54% of the deaths in channing house were correctly classified. For specificity (true-negative), we see that 50.47% of the residents being classified as leaving Channing House are correctly classified. Lastly, for precision we see that 81.81% is the value, which indicates the classified cases over the correctly classified. This is a high number which indicates that over eigth-tenths of the predictions were correctly classified (precision). </em></p>
+<p><em>Our AUC was found to be 0.669, which means the 66.9% of the time this model can explain whether cens can be found based on the entry and exit variable. This is a low AUC, and shows that the ROC model is not a well predictor. Another model set/regression model could be found that has a higher AUC to predict the cens off of entry and exit. </em></p>
+<p><em>From the 10-fold CV ran, the results that were given are acc (0.024), sens (0.0), spec (1,0), ppv (0.0), and the auc to be 1.0. We can see that the auc is very high, which is a good indicator that this model of regression can greatly predict cens (binary variable) off of the entry and exit variables since it has such a large area.</em></p>
+<p>##Part Six
+6. (10 pts) Choose one variable you want to predict (can be one you used from before; either binary or continuous) and run a LASSO regression inputting all the rest of your variables as predictors. Choose lambda to give the simplest model whose accuracy is near that of the best (i.e., lambda.1se). Discuss which variables are retained. Perform 10-fold CV using this model: if response in binary, compare model’s out-of-sample accuracy to that of your logistic regression in part 5; if response is numeric, compare the residual standard error (at the bottom of the summary output, aka RMSE): lower is better fit!</p>
+<pre class="r"><code># LASSO regression Part 1
+fit3&lt;-lm(cens~time+exit+entry,data=chandata)
+yhat&lt;-predict(fit3)
+mean((chandata$cens-yhat)^2) </code></pre>
+<pre><code>## [1] 0.2163651</code></pre>
+<pre class="r"><code>#Lasso regression part 2
+library(glmnet)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     expand, pack, unpack</code></pre>
+<pre><code>## Loaded glmnet 3.0-2</code></pre>
+<pre class="r"><code>y&lt;-as.matrix(chandata$cens)
+x&lt;-chandata%&gt;%dplyr::select(exit, entry, time)%&gt;%mutate_all(scale)%&gt;%as.matrix
+cv&lt;-cv.glmnet(x,y)
+lasso1&lt;-glmnet(x,y,lambda=cv$lambda.1se)
+coef(lasso1)</code></pre>
+<pre><code>## 4 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                      s0
+## (Intercept)  0.38095238
+## exit         .         
+## entry        0.05739437
+## time        -0.02317146</code></pre>
+<pre class="r"><code>#10-fold Cross Validation before LASSO regression added in
+set.seed(1234)
+k=10 
+data1&lt;-chandata[sample(nrow(chandata)),] 
+folds&lt;-cut(seq(1:nrow(chandata)),breaks=k,labels=F) 
+diags&lt;-NULL
+for(i in 1:k){
+ train&lt;-data1[folds!=i,]
+ test&lt;-data1[folds==i,]
+ fit4&lt;-lm(cens~time+exit+entry,data=chandata)
+ yhat2&lt;-predict(fit4,newdata=test)
+ diags&lt;-mean((test$cens-yhat2)^2)
+}
+mean(diags)</code></pre>
+<pre><code>## [1] 0.2031545</code></pre>
+<p><em>The variables that were retained in the lasso regression were time and entry, while exit was not retained. This indicates that entry and time are the most important predictors of cens (which means if the patients died or left the Channing House). When comparing the 10-fold CV we see that this CV output is smaller which indicates a better fit than the model in part 5. </em></p>
+</div>

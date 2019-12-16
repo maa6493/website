@@ -1,0 +1,7 @@
+"0","read.csv(""chandata.csv"")
+"
+"2","Warning message:
+"
+"2","In for (pair in pairs) { :"
+"2"," closing unused connection 3 (chandata.csv)
+"

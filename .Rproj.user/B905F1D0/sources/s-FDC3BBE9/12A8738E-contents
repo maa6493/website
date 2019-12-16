@@ -1,0 +1,45 @@
+---
+title: Python
+author: Moses Alfaro
+date: '2019-12-15'
+slug: python
+categories: []
+tags: []
+description: ''
+---
+## Python, the Computational Program
+![](/blog/2019-12-15-python_files/pythonimage.jpeg)
+Python is a computational program that allows users to use a varitey of packages and programs through its interface to conduct prcoedures needed in a variety of fields (i.e., computational biology or statistics in general). In our class for computational biology, we used the program R studio which can be used in conjuction with Python. For instance, down below is a tutorial on how to use Python along with the R Studio interface. I will show you some ways to use Python in R Studio in conjuction with a variety of functions that could be useful to you.
+
+*You must use the library(reticulate) function in order to connect Python to R studio.*
+```{r}
+library(reticulate)
+```
+
+*Down below is where we use Python coding on R Studio interface! How cool!!*
+```{python}
+print("How is everyone doing today?")
+```
+*We can use Numpy as a way to have numerical computing in Python (i.e, we can use this for arrays as well!). This is shown down below.*
+
+```{python}
+import numpy as np
+x=np.array([1,2,3])
+x
+```
+```{python}
+print(x/2+1) #vectorized arithmetic
+```
+```{python}
+x.shape #size of array (attribute)
+```
+
+*We can use Numpy for basic numeric tests as well!*
+
+```{python}
+love = 4
+pie = 3
+
+love + pie
+```
+
